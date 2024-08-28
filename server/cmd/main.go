@@ -6,7 +6,7 @@ import (
 
 	"github.com/go-sql-driver/mysql"
 	"github.com/sharvillimaye/scarlet-sniper/server/cmd/api"
-	"github.com/sharvillimaye/scarlet-sniper/server/configs"
+	"github.com/sharvillimaye/scarlet-sniper/server/config"
 	"github.com/sharvillimaye/scarlet-sniper/server/db"
 )
 
@@ -25,7 +25,7 @@ func main() {
 	}
 
 	initStorage(db)
-	
+
 	server := api.NewAPIServer(":8080", db)
 	if err := server.Run(); err != nil {
 		log.Fatal(err)
@@ -37,6 +37,6 @@ func initStorage(db *sql.DB) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	
+
 	log.Println("DB: Successfully connected!")
 }

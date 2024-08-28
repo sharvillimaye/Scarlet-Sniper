@@ -2,10 +2,12 @@ package types
 
 import "time"
 
-type RegisterUserPayload struct {
-	Username string `json:"username"`
-	Email     string `json:"email"`
-	Password  string `json:"password"`
+type User struct {
+	ID        int       `json:"id"`
+	Email     string    `json:"email"`
+	Username  string    `json:"username"`
+	Password  string    `json:"-"`
+	CreatedAt time.Time `json:"createdAt"`
 }
 
 type UserStore interface {
@@ -14,10 +16,13 @@ type UserStore interface {
 	CreateUser(User) error
 }
 
-type User struct {
-	ID int `json:"id"`
-	Email string `json:"email"`
-	Username string `json:"username"`
-	Password string `json:"-"`
-	CreatedAt time.Time `json:"createdAt"`
+type RegisterUserPayload struct {
+	Username string `json:"username" validate:"required"`
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required,min=8,max=130"`
+}
+
+type LoginUserPayload struct {
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required"`
 }

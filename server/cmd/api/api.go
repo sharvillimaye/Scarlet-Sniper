@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/sharvillimaye/scarlet-sniper/server/services/user"
+	"github.com/sharvillimaye/scarlet-sniper/server/service/user"
 )
 
 type APIServer struct {

@@ -46,7 +46,7 @@ for course in dump:
         title = course["title"]
     for section in course['sections']:
         if "index" in section:
-            courseNumber = section["index"]
+            courseNumber = int(section["index"])
         if "openStatus" in section:
             openStatus = section["openStatus"]
             if openStatus:

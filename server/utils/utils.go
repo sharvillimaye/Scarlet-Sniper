@@ -41,7 +41,3 @@ func GetTokenFromRequest(r *http.Request) string {
 
 	return ""
 }
-
-func SendAlert() {
-	
-}

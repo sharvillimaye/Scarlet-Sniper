@@ -2,10 +2,12 @@ package api
 
 import (
 	"database/sql"
-	"github.com/sharvillimaye/scarlet-sniper/server/service/course"
-	"github.com/sharvillimaye/scarlet-sniper/server/service/subscription"
+	"github.com/sharvillimaye/scarlet-sniper/server/service/monitor"
 	"log"
 	"net/http"
+
+	"github.com/sharvillimaye/scarlet-sniper/server/service/course"
+	"github.com/sharvillimaye/scarlet-sniper/server/service/subscription"
 
 	"github.com/gorilla/mux"
 	"github.com/sharvillimaye/scarlet-sniper/server/service/user"
@@ -32,10 +34,13 @@ func (s *APIServer) Run() error {
 	userHandler.RegisterRoutes(subrouter)
 
 	courseStore := course.NewStore(s.db)
-	
+
 	subscriptionStore := subscription.NewStore(s.db)
 	subscriptionHandler := subscription.NewHandler(subscriptionStore, courseStore, userStore)
 	subscriptionHandler.RegisterRoutes(subrouter)
+
+	monitorService := monitor.NewService(subscriptionStore, courseStore)
+	monitorService.MonitorOpenCourses()
 
 	log.Println("Listening on", s.addr)
 

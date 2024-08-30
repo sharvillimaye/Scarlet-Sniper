@@ -64,7 +64,7 @@ func (s *Store) GetCourseByID(id int) (*types.Course, error) {
 	return course, nil
 }
 
-func (s *Store) CreateCourse(course types.Course) error {
+func (s *Store) CreateCourse(course *types.Course) error {
 	_, err := s.db.Exec("INSERT INTO courses (id, courseNumber, title, status) VALUES (?, ?, ?, ?)", course.ID, course.CourseNumber, course.Title, course.Status)
 	if err != nil {
 		return err
@@ -72,8 +72,8 @@ func (s *Store) CreateCourse(course types.Course) error {
 	return nil
 }
 
-func (s *Store) UpdateCourse(course types.Course) error {
-	_, err := s.db.Exec("UPDATE courses SET title = ? AND status = ? WHERE id = ?", course.Title, course.Status, course.ID)
+func (s *Store) UpdateCourse(course *types.Course) error {
+	_, err := s.db.Exec("UPDATE courses SET title = ?, status = ? WHERE id = ?", course.Title, course.Status, course.ID)
 	if err != nil {
 		return err
 	}

@@ -30,25 +30,18 @@ type LoginUserPayload struct {
 }
 
 type Course struct {
-	ID           int          `json:"id"`
-	CourseNumber int          `json:"courseNumber"`
-	Title        string       `json:"title"`
-	Status       CourseStatus `json:"status"`
-	LastChecked  time.Time    `json:"lastChecked"`
+	ID           int       `json:"id"`
+	CourseNumber int       `json:"courseNumber"`
+	Title        string    `json:"title"`
+	Status       string    `json:"status"`
+	LastChecked  time.Time `json:"lastChecked"`
 }
-
-type CourseStatus int
-
-const (
-	OPEN CourseStatus = iota
-	CLOSED
-)
 
 type CourseStore interface {
 	GetCourseByNumber(courseNumber int) (*Course, error)
 	GetCourseByID(id int) (*Course, error)
-	CreateCourse(course Course) error
-	UpdateCourse(course Course) error
+	CreateCourse(course *Course) error
+	UpdateCourse(course *Course) error
 }
 
 type Subscription struct {

@@ -2,6 +2,8 @@ package api
 
 import (
 	"database/sql"
+	"github.com/sharvillimaye/scarlet-sniper/server/service/course"
+	"github.com/sharvillimaye/scarlet-sniper/server/service/subscription"
 	"log"
 	"net/http"
 
@@ -17,7 +19,7 @@ type APIServer struct {
 func NewAPIServer(addr string, db *sql.DB) *APIServer {
 	return &APIServer{
 		addr: addr,
-		db: db,
+		db:   db,
 	}
 }
 
@@ -29,8 +31,13 @@ func (s *APIServer) Run() error {
 	userHandler := user.NewHandler(userStore)
 	userHandler.RegisterRoutes(subrouter)
 
+	courseStore := course.NewStore(s.db)
+
+	subscriptionStore := subscription.NewStore(s.db)
+	subscriptionHandler := subscription.NewHandler(subscriptionStore, courseStore, userStore)
+	subscriptionHandler.RegisterRoutes(subrouter)
+
 	log.Println("Listening on", s.addr)
 
 	return http.ListenAndServe(s.addr, router)
 }
-

@@ -56,7 +56,10 @@ func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.WriteJSON(w, http.StatusOK, map[string]string{"token": token})
+	if err = utils.WriteJSON(w, http.StatusOK, map[string]string{"token": token}); err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
 }
 
 func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
@@ -85,14 +88,18 @@ func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = h.store.CreateUser(types.User{
-		Email:    payload.Email,
-		Username: payload.Username,
-		Password: hashedPassword,
+		PhoneNumber: payload.PhoneNumber,
+		Email:       payload.Email,
+		Username:    payload.Username,
+		Password:    hashedPassword,
 	})
 	if err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
 	}
 
-	utils.WriteJSON(w, http.StatusCreated, nil)
+	if err = utils.WriteJSON(w, http.StatusCreated, nil); err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
 }

@@ -32,8 +32,8 @@ func (s *APIServer) Run() error {
 	userHandler.RegisterRoutes(subrouter)
 
 	courseStore := course.NewStore(s.db)
-
 	subscriptionStore := subscription.NewStore(s.db)
+
 	subscriptionHandler := subscription.NewHandler(subscriptionStore, courseStore, userStore)
 	subscriptionHandler.RegisterRoutes(subrouter)
 

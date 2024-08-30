@@ -46,6 +46,9 @@ const (
 
 type CourseStore interface {
 	GetCourseByNumber(courseNumber int) (*Course, error)
+	GetCourseByID(id int) (*Course, error)
+	CreateCourse(course Course) error
+	UpdateCourse(course Course) error
 }
 
 type Subscription struct {

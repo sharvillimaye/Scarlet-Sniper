@@ -2,13 +2,6 @@
 
 
 
-- Tech Stack
-- APIs
-- Deployment
-- Setup
-- Contribution
-- etc.
-
 ## License
 
 Copyright (c) 2024 Sharvil Limaye. Released under the MIT License. See [LICENSE](LICENSE) for details.

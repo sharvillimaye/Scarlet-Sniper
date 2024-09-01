@@ -1,13 +1,16 @@
 import { Link } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { Text, View } from "react-native";
+import { Image, Text, View } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+import { icons } from "@/constants";
 
 export default function Index() {
   return (
-    <View className="flex-1 items-center justify-center bg-white" >
-      <Text>Scarlet Sniper</Text>
-      <StatusBar />
-      <Link href="/home" style={{ color: 'blue' }}>Go to Home</Link>
+    <View className="items-center justify-center">
+      <Text>Hey</Text>
+      <Link href={"/(tabs)/home"}>Click Here</Link>
     </View>
   );
 }

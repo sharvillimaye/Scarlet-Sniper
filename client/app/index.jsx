@@ -3,10 +3,14 @@ import { Redirect, router } from "expo-router";
 import { View, Text, Image, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { icons } from "@/constants";
-import CustomButton from "../components/CustomButton"
+import CustomButton from "../components/CustomButton";
+import { useGlobalContext } from "../context/GlobalContext";
 
 export default function Index() {
+  const { isLoading, isLogged } = useGlobalContext();
+  
+  if (!isLoading && isLogged) return <Redirect href="/home" />;
+
   return (
     <SafeAreaView className="white">
       <ScrollView contentContainerStyle={{height: '100%',}}>
@@ -24,7 +28,7 @@ export default function Index() {
         </View>
       </ScrollView>
 
-      <StatusBar backgroundColor="#161622" style="dark"></StatusBar>
+      <StatusBar backgroundColor="#161622" style="light"></StatusBar>
     </SafeAreaView>
   );
 }

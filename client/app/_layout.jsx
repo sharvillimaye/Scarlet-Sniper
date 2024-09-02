@@ -1,8 +1,16 @@
 import { SplashScreen, Stack } from "expo-router";
 import { useEffect } from "react";
-import { useFonts } from "expo-font";  
+import { useFonts } from "expo-font";
+import { NativeWindStyleSheet } from "nativewind";  
+import GlobalProvider from "@/context/GlobalContext";
 
 const RootLayout = () => {
+  NativeWindStyleSheet.setOutput({
+    default: "native",
+  });
+
+  SplashScreen.preventAutoHideAsync();
+
   const [fontsLoaded, error] = useFonts({
     "SUSE-Bold": require("../assets/fonts/SUSE-Bold.ttf"),
     "SUSE-ExtraBold": require("../assets/fonts/SUSE-ExtraBold.ttf"),
@@ -31,11 +39,14 @@ const RootLayout = () => {
   }
 
   return (
-    <Stack options={{headerShown: false}}>
-      <Stack.Screen name='index' options={{headerShown: false}}/>
-      <Stack.Screen name='(auth)' options={{headerShown: false}}/>
-      <Stack.Screen name='(tabs)' options={{headerShown: false}}/>
-    </Stack>
+    <GlobalProvider>
+      <Stack options={{headerShown: false}}>
+        <Stack.Screen name='(auth)' options={{headerShown: false}}/>
+        <Stack.Screen name='(tabs)' options={{headerShown: false}}/>
+        <Stack.Screen name='index' options={{headerShown: false}}/>
+      </Stack>
+    </GlobalProvider>
+    
   )
 }
 

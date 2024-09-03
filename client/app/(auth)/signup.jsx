@@ -1,14 +1,14 @@
 import { useState } from "react";
-import { Link, router } from "expo-router";
+import { Link } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { View, Text, ScrollView, Dimensions, Alert, Image } from "react-native";
+import { View, Text, ScrollView, Alert } from "react-native";
 
 import { useGlobalContext } from "@/context/GlobalContext";
 import FormField from '@/components/FormField'
 import CustomButton from '@/components/CustomButton'
 
 const SignUp = () => {
-  const { login, register, userInfo, setIsLogged } = useGlobalContext();
+  const { register } = useGlobalContext();
   const [isSubmitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({
     username: '',
@@ -24,7 +24,7 @@ const SignUp = () => {
     setSubmitting(true);
 
     try {
-      register(form.username, form.email, form.password)
+      await register(form.username, form.email, form.password)
       Alert.alert("Your account has been created. Please log in.");
     } catch (error) {
       Alert.alert("Error", error.message);

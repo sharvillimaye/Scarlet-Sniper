@@ -42,7 +42,17 @@ func (h *Handler) getSubscriptions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err = utils.WriteJSON(w, http.StatusOK, subscriptions); err != nil {
+	var courses []types.Course
+	for _, subscription := range subscriptions {
+		course, err := h.courseStore.GetCourseByID(subscription.CourseID)
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("course not found: %v", err))
+			return
+		}
+		courses = append(courses, *course)
+	}
+
+	if err = utils.WriteJSON(w, http.StatusOK, courses); err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
 	}
@@ -75,8 +85,12 @@ func (h *Handler) handleSubscribe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = h.store.CheckSubscriptionByUserIDAndCourseID(user.ID, course.ID)
-	if err == nil {
+	subscriptions, err := h.store.CheckSubscriptionByUserIDAndCourseID(user.ID, course.ID)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("subscription not found: %d", course.CourseNumber))
+		return
+	}
+	if subscriptions != nil {
 		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("subscription for course number %d already exists", course.CourseNumber))
 		return
 	}
@@ -111,9 +125,13 @@ func (h *Handler) handleUnsubscribe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err := h.userStore.GetUserByID(userID)
+	u, err := h.userStore.GetUserByID(userID)
 	if err != nil {
 		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("user not found: %v", err))
+		return
+	}
+	if u == nil {
+		utils.WriteError(w, http.StatusNotFound, fmt.Errorf("user not found: %v", err))
 		return
 	}
 
@@ -122,16 +140,26 @@ func (h *Handler) handleUnsubscribe(w http.ResponseWriter, r *http.Request) {
 		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("course not found: %v", err))
 		return
 	}
+	if course == nil {
+		utils.WriteError(w, http.StatusNotFound, fmt.Errorf("user not found: %v", err))
+		return
+	}
 
-	subscription, err := h.store.CheckSubscriptionByUserIDAndCourseID(userID, course.ID)
+	subscriptions, err := h.store.CheckSubscriptionByUserIDAndCourseID(userID, course.ID)
 	if err != nil {
 		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("subscription for course number %d not found", course.CourseNumber))
 		return
 	}
-
-	if err = h.store.DeleteSubscription(*subscription); err != nil {
-		utils.WriteError(w, http.StatusInternalServerError, fmt.Errorf("unable to delete subscription"))
+	if subscriptions == nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("subscription for course number %d not found", course.CourseNumber))
 		return
+	}
+
+	for _, subscription := range subscriptions {
+		if err = h.store.DeleteSubscription(subscription); err != nil {
+			utils.WriteError(w, http.StatusInternalServerError, fmt.Errorf("unable to delete subscription"))
+			return
+		}
 	}
 
 	if err = utils.WriteJSON(w, http.StatusOK, nil); err != nil {

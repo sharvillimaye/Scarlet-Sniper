@@ -23,6 +23,21 @@ func NewHandler(store types.UserStore) *Handler {
 func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/login", h.handleLogin).Methods("POST")
 	router.HandleFunc("/register", h.handleRegister).Methods("POST")
+	router.HandleFunc("/user", auth.WithJWTAuth(h.handleUser, h.store)).Methods("GET")
+}
+
+func (h *Handler) handleUser(w http.ResponseWriter, r *http.Request) {
+	userID := auth.GetUserIDFromContext(r.Context())
+
+	user, err := h.store.GetUserByID(userID)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("failed to get user by id: %v", err))
+	}
+
+	if err = utils.WriteJSON(w, http.StatusOK, map[string]string{"username": user.Username, "email": user.Email}); err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
 }
 
 func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
@@ -56,7 +71,7 @@ func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err = utils.WriteJSON(w, http.StatusOK, map[string]string{"token": token}); err != nil {
+	if err = utils.WriteJSON(w, http.StatusOK, map[string]string{"username": u.Username, "email": u.Email, "token": token}); err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
 	}
@@ -88,17 +103,16 @@ func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = h.store.CreateUser(types.User{
-		PhoneNumber: payload.PhoneNumber,
-		Email:       payload.Email,
-		Username:    payload.Username,
-		Password:    hashedPassword,
+		Email:    payload.Email,
+		Username: payload.Username,
+		Password: hashedPassword,
 	})
 	if err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
 	}
 
-	if err = utils.WriteJSON(w, http.StatusCreated, nil); err != nil {
+	if err = utils.WriteJSON(w, http.StatusCreated, map[string]string{"username": payload.Username, "email": payload.Email}); err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
 	}

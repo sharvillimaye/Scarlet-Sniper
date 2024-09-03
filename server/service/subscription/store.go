@@ -3,6 +3,7 @@ package subscription
 import (
 	"database/sql"
 	"github.com/sharvillimaye/scarlet-sniper/server/types"
+	"log"
 )
 
 type Store struct {
@@ -32,6 +33,12 @@ func (s *Store) GetSubscriptionsByUserID(userID int) ([]types.Subscription, erro
 	if err != nil {
 		return nil, err
 	}
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+			log.Println("Error closing row:", err)
+		}
+	}(rows)
 
 	var subscriptions []types.Subscription
 	for rows.Next() {
@@ -50,6 +57,12 @@ func (s *Store) GetSubscriptionsByCourseID(courseID int) ([]types.Subscription, 
 	if err != nil {
 		return nil, err
 	}
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+			log.Println("Error closing row:", err)
+		}
+	}(rows)
 
 	var subscriptions []types.Subscription
 	for rows.Next() {
@@ -63,21 +76,33 @@ func (s *Store) GetSubscriptionsByCourseID(courseID int) ([]types.Subscription, 
 	return subscriptions, nil
 }
 
-func (s *Store) CheckSubscriptionByUserIDAndCourseID(userID int, courseID int) (*types.Subscription, error) {
+func (s *Store) CheckSubscriptionByUserIDAndCourseID(userID int, courseID int) ([]types.Subscription, error) {
 	rows, err := s.db.Query("SELECT * FROM user_course_subscriptions WHERE userID = ? AND courseID = ?", userID, courseID)
 	if err != nil {
+		print(err)
 		return nil, err
 	}
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+			log.Println("Error closing row:", err)
+		}
+	}(rows)
 
-	subscription := new(types.Subscription)
+	var subscriptions []types.Subscription
 	for rows.Next() {
-		subscription, err = scanRowIntoSubscription(rows)
+		subscription, err := scanRowIntoSubscription(rows)
 		if err != nil {
 			return nil, err
 		}
+		subscriptions = append(subscriptions, *subscription)
 	}
 
-	return subscription, nil
+	if subscriptions == nil || len(subscriptions) == 0 {
+		return nil, nil
+	}
+
+	return subscriptions, nil
 }
 
 func (s *Store) CreateSubscription(subscription types.Subscription) error {

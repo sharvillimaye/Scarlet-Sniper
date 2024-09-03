@@ -3,6 +3,7 @@ package user
 import (
 	"database/sql"
 	"fmt"
+	"log"
 
 	"github.com/sharvillimaye/scarlet-sniper/server/types"
 )
@@ -22,7 +23,6 @@ func scanRowIntoUser(rows *sql.Rows) (*types.User, error) {
 		&user.ID,
 		&user.Username,
 		&user.Email,
-		&user.PhoneNumber,
 		&user.Password,
 		&user.CreatedAt,
 	)
@@ -38,6 +38,12 @@ func (s *Store) GetUserByEmail(email string) (*types.User, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+			log.Println("Error closing row:", err)
+		}
+	}(rows)
 
 	u := new(types.User)
 	for rows.Next() {
@@ -59,6 +65,12 @@ func (s *Store) GetUserByID(id int) (*types.User, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+			log.Println("Error closing row:", err)
+		}
+	}(rows)
 
 	u := new(types.User)
 	for rows.Next() {
@@ -76,7 +88,7 @@ func (s *Store) GetUserByID(id int) (*types.User, error) {
 }
 
 func (s *Store) CreateUser(user types.User) error {
-	_, err := s.db.Exec("INSERT INTO users (email, phoneNumber, username, password) VALUES (?, ?, ?, ?)", user.Email, user.PhoneNumber, user.Username, user.Password)
+	_, err := s.db.Exec("INSERT INTO users (email, username, password) VALUES (?, ?, ?)", user.Email, user.Username, user.Password)
 	if err != nil {
 		return err
 	}

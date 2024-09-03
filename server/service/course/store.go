@@ -3,6 +3,7 @@ package course
 import (
 	"database/sql"
 	"github.com/sharvillimaye/scarlet-sniper/server/types"
+	"log"
 )
 
 type Store struct {
@@ -35,6 +36,12 @@ func (s *Store) GetCourseByNumber(courseNumber int) (*types.Course, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+			log.Print("Error closing row:", err)
+		}
+	}(rows)
 
 	course := new(types.Course)
 	for rows.Next() {
@@ -47,11 +54,45 @@ func (s *Store) GetCourseByNumber(courseNumber int) (*types.Course, error) {
 	return course, nil
 }
 
+func (s *Store) GetAllCourses() ([]types.Course, error) {
+	rows, err := s.db.Query("SELECT * FROM courses")
+	if err != nil {
+		return nil, err
+	}
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+			log.Print("Error closing row:", err)
+		}
+	}(rows)
+
+	var courses []types.Course
+	for rows.Next() {
+		course, err := scanRowIntoSubscription(rows)
+		if err != nil {
+			return nil, err
+		}
+		courses = append(courses, *course)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return courses, nil
+}
+
 func (s *Store) GetCourseByID(id int) (*types.Course, error) {
 	rows, err := s.db.Query("SELECT * FROM courses WHERE id = ?", id)
 	if err != nil {
 		return nil, err
 	}
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+			log.Println("Error closing row:", err)
+		}
+	}(rows)
 
 	course := new(types.Course)
 	for rows.Next() {

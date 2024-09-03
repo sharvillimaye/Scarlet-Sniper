@@ -8,7 +8,7 @@ import FormField from '@/components/FormField'
 import CustomButton from '@/components/CustomButton'
 
 const SignIn = () => {
-  const { login, userInfo, setIsLogged } = useGlobalContext();
+  const { login, userInfo } = useGlobalContext();
   const [isSubmitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({
     email: '',
@@ -23,10 +23,7 @@ const SignIn = () => {
     setSubmitting(true);
 
     try {
-      const result = await login(form.email, form.password)
-      if (userInfo !== null) {
-        setIsLogged(true);
-        Alert.alert("Success", result);
+      if (await login(form.email, form.password)) {
         router.replace("/home");
       }
     } catch (error) {

@@ -26,3 +26,40 @@ type LoginUserPayload struct {
 	Email    string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required"`
 }
+
+type Course struct {
+	ID           int       `json:"id"`
+	CourseNumber int       `json:"courseNumber"`
+	Title        string    `json:"title"`
+	Status       string    `json:"status"`
+	LastChecked  time.Time `json:"lastChecked"`
+}
+
+type CourseStore interface {
+	GetAllCourses() ([]Course, error)
+	GetCourseByNumber(courseNumber int) (*Course, error)
+	GetCourseByID(id int) (*Course, error)
+	CreateCourse(course *Course) error
+	UpdateCourse(course *Course) error
+}
+
+type Subscription struct {
+	CourseID int `json:"courseID"`
+	UserID   int `json:"userID"`
+}
+
+type SubscriptionStore interface {
+	GetSubscriptionsByUserID(userID int) ([]Subscription, error)
+	GetSubscriptionsByCourseID(courseID int) ([]Subscription, error)
+	CheckSubscriptionByUserIDAndCourseID(userID int, courseID int) ([]Subscription, error)
+	CreateSubscription(subscription Subscription) error
+	DeleteSubscription(subscription Subscription) error
+}
+
+type SubscriptionRequestPayload struct {
+	CourseNumber int `json:"courseNumber" validate:"required"`
+}
+
+type NotificationService interface {
+	SendNotifications(subscriptions []Subscription) error
+}

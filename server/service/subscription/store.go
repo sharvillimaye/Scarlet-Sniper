@@ -20,6 +20,7 @@ func scanRowIntoSubscription(rows *sql.Rows) (*types.Subscription, error) {
 	err := rows.Scan(
 		&subscription.UserID,
 		&subscription.CourseID,
+		&subscription.NotificationToken,
 	)
 	if err != nil {
 		return nil, err
@@ -106,7 +107,7 @@ func (s *Store) CheckSubscriptionByUserIDAndCourseID(userID int, courseID int) (
 }
 
 func (s *Store) CreateSubscription(subscription types.Subscription) error {
-	_, err := s.db.Exec("INSERT INTO user_course_subscriptions (userID, courseID) VALUES (?, ?)", subscription.UserID, subscription.CourseID)
+	_, err := s.db.Exec("INSERT INTO user_course_subscriptions (userID, courseID, notificationToken) VALUES (?, ?, ?)", subscription.UserID, subscription.CourseID, subscription.NotificationToken)
 	if err != nil {
 		return err
 	}

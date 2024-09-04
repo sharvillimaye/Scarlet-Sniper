@@ -17,14 +17,14 @@ type UserStore interface {
 }
 
 type RegisterUserPayload struct {
-	Username string `json:"username" validate:"required"`
-	Email    string `json:"email" validate:"required,email"`
+	Username string `json:"username" validate:"required,max=320"`
+	Email    string `json:"email" validate:"required,email,max=320"`
 	Password string `json:"password" validate:"required,min=8,max=130"`
 }
 
 type LoginUserPayload struct {
-	Email    string `json:"email" validate:"required,email"`
-	Password string `json:"password" validate:"required"`
+	Email    string `json:"email" validate:"required,email,max=320"`
+	Password string `json:"password" validate:"required,max=130"`
 }
 
 type Course struct {
@@ -44,8 +44,9 @@ type CourseStore interface {
 }
 
 type Subscription struct {
-	CourseID int `json:"courseID"`
-	UserID   int `json:"userID"`
+	CourseID          int    `json:"courseID"`
+	UserID            int    `json:"userID"`
+	NotificationToken string `json:"notificationToken"`
 }
 
 type SubscriptionStore interface {
@@ -57,6 +58,11 @@ type SubscriptionStore interface {
 }
 
 type SubscriptionRequestPayload struct {
+	CourseNumber      int    `json:"courseNumber" validate:"required"`
+	NotificationToken string `json:"notificationToken" validate:"required"`
+}
+
+type UnsubscriptionRequestPayload struct {
 	CourseNumber int `json:"courseNumber" validate:"required"`
 }
 

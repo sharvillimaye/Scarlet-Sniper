@@ -113,7 +113,7 @@ func (h *Handler) handleSubscribe(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) handleUnsubscribe(w http.ResponseWriter, r *http.Request) {
 	userID := auth.GetUserIDFromContext(r.Context())
 
-	var subscriptionRequest types.SubscriptionRequestPayload
+	var subscriptionRequest types.UnsubscriptionRequestPayload
 	if err := utils.ParseJSON(r, &subscriptionRequest); err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
 		return

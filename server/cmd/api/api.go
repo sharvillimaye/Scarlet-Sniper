@@ -2,7 +2,7 @@ package api
 
 import (
 	"database/sql"
-	"github.com/rs/cors"
+	"github.com/sharvillimaye/scarlet-sniper/server/service/health"
 	"log"
 	"net/http"
 
@@ -30,6 +30,9 @@ func (s *APIServer) Run() error {
 	router := mux.NewRouter()
 	subrouter := router.PathPrefix("/api/v1/").Subrouter()
 
+	healthHandler := health.NewHandler()
+	healthHandler.RegisterRoutes(subrouter)
+
 	userStore := user.NewStore(s.db)
 	userHandler := user.NewHandler(userStore)
 	userHandler.RegisterRoutes(subrouter)
@@ -45,14 +48,7 @@ func (s *APIServer) Run() error {
 	monitorService := monitor.NewService(notificationService, subscriptionStore, courseStore)
 	go monitorService.MonitorOpenCourses()
 
-	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:8081", "exp://192.168.1.18:8081"},
-		AllowCredentials: true,
-	})
-
-	handler := c.Handler(router)
-
 	log.Println("Listening on", s.addr)
 
-	return http.ListenAndServe(s.addr, handler)
+	return http.ListenAndServe(s.addr, router)
 }

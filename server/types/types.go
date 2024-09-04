@@ -59,7 +59,7 @@ type SubscriptionStore interface {
 
 type SubscriptionRequestPayload struct {
 	CourseNumber      int    `json:"courseNumber" validate:"required"`
-	NotificationToken string `json:"notificationToken" validate:"required"`
+	NotificationToken string `json:"notificationToken"`
 }
 
 type UnsubscriptionRequestPayload struct {

@@ -93,7 +93,7 @@ const GlobalProvider = ({ children }) => {
         const response = await axios.post(`${BASE_URL}/subscriptions`, 
           { 
             courseNumber: parseInt(courseNumber, 10),
-            notificationToken: expoPushToken
+            notificationToken: parseInt(expoPushToken?.data, 10)
            },
           { headers: { Authorization: userInfo.token } }
         );

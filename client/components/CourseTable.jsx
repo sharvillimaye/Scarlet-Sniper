@@ -67,6 +67,9 @@ const CourseTable = () => {
         <StyledView className="px-2 py-4">
           {courses && courses.length > 0 ? (
             <>
+              <StyledText className="text-black font-pmedium text-xl mb-4 text-center">
+                {showAllCourses ? "All Courses" : "Open Courses"}
+              </StyledText>
               <StyledView className="flex-row bg-primary rounded-t-lg py-3">
                 <TableHeader title="Title" width="w-1/2" align="left" />
                 <TableHeader title="Index" width="w-1/4" align="center" />

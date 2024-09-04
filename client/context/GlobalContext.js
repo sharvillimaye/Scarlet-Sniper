@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { Alert } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import { usePushNotifications } from "@/hooks/usePushNotifications";
 
 const BASE_URL = 'http://localhost:8080/api/v1';
 
@@ -14,10 +15,13 @@ const GlobalProvider = ({ children }) => {
   const [isLogged, setIsLogged] = useState(false);
   const [courses, setCourses] = useState([]);
 
+  const { expoPushToken } = usePushNotifications()
+
   const register = async (username, email, password) => {
     setIsLoading(true);
     try {
       await axios.post(`${BASE_URL}/register`, { username, email, password });
+      return true
     } catch (e) {
       if (e.response?.status === 400) {
         Alert.alert("Error", 'Please enter a valid username and email!');
@@ -42,9 +46,11 @@ const GlobalProvider = ({ children }) => {
     } catch (e) {
       if (e.response?.status === 400) {
         Alert.alert("Error", 'Email or Password was incorrect.');
+        return false;
       } else {
         console.error(`Login error: ${e}`);
         Alert.alert("Error", 'Internal Server Error.');
+        return false;
       }
     } finally {
       setIsLoading(false);
@@ -77,15 +83,18 @@ const GlobalProvider = ({ children }) => {
   }, []);
 
   const addCourse = async (courseNumber) => {
-    if (courses && courses.length === 5) {
-      Alert.alert("Error", "You can only snipe up to 5 courses.");
-      return;
+    if (courses && courses.length === 10) {
+      Alert.alert("Error", "You can only snipe up to 10 courses.");
+      return false;
     }
     
     if (courseNumber !== null) {
       try {
         const response = await axios.post(`${BASE_URL}/subscriptions`, 
-          { courseNumber: parseInt(courseNumber, 10) },
+          { 
+            courseNumber: parseInt(courseNumber, 10),
+            notificationToken: expoPushToken
+           },
           { headers: { Authorization: userInfo.token } }
         );
         setCourses(prevCourses => [...prevCourses, response.data]);

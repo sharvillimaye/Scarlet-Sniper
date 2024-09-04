@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "314449116971",
+    "project_id": "scarlet-sniper",
+    "storage_bucket": "scarlet-sniper.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:314449116971:android:9de2f77c3fa57270408f6e",
+        "android_client_info": {
+          "package_name": "com.sharvillimaye.scarletsniper"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCRxWhOGHYQJ4mY4cYhZ-Cp45ByUbgpElo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

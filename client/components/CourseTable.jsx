@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Linking, Alert, ScrollView, SafeAreaView, ActivityIndicator } from 'react-native';
+import { Link } from 'expo-router';
 import { useGlobalContext } from '@/context/GlobalContext';
 import { styled } from 'nativewind';
 
@@ -22,7 +23,7 @@ const TableCell = ({ children, width, align = 'left' }) => (
 
 const CourseTable = () => {
   const { deleteCourse, getCourses, courses } = useGlobalContext();
-  const [showAllCourses, setShowAllCourses] = useState(true);
+  const [showAllCourses, setShowAllCourses] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -98,13 +99,20 @@ const CourseTable = () => {
               ))}
             </>
           ) : (
-            <StyledText className='font-psemibold pt-2'>No Courses Sniped</StyledText>
+            <StyledView className="items-center">
+              <StyledText className='text-center font-psemibold pt-2 mt-7'>No courses currently sniped.</StyledText>
+              <Link href="/add" asChild>
+                <StyledTouchableOpacity className="mt-2">
+                  <StyledText className="text-lg font-psemibold text-primary">Snipe Courses</StyledText>
+                </StyledTouchableOpacity>
+              </Link>
+            </StyledView>
           )}
         </StyledView>
         {courses && courses.length > 0 && (
           <StyledTouchableOpacity onPress={toggleCourseView} className="bg-blue-500 py-2 px-4 rounded-full mx-4 my-2">
             <StyledText className="text-white font-pmedium text-center">
-              {showAllCourses ? "Show Open Courses" : "Show All Courses"}
+              {showAllCourses ? "Show Open Courses" : "Show All Sniped Courses"}
             </StyledText>
           </StyledTouchableOpacity>
         )}

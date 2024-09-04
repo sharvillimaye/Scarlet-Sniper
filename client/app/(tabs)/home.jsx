@@ -14,7 +14,7 @@ const Home = () => {
     <SafeAreaView className="flex-1 bg-gray-100">
       <ScrollView>
         <View className='w-full px-4 my-6'>
-          <Text className='text-3xl font-psemibold mt-6'>Courses</Text>
+          <Text className='text-3xl font-psemibold mt-6'>Home</Text>
           <CourseTable courses={courses} />
         </View>
       </ScrollView>

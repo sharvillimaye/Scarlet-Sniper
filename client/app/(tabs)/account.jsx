@@ -14,9 +14,8 @@ const Account = () => {
 
   const submit = async () => { 
     setSubmitting(true);
-
     try {
-      logout()
+      await logout()
       router.replace("/");
     } catch(error) {
       Alert.alert("Error", error.message);
@@ -28,11 +27,8 @@ const Account = () => {
   return (
     <SafeAreaView className='h-full'>
       <ScrollView>
-        <View 
-          className='w-full flex justify-center h-full px-4 my-6'
-        >
-          <Text className='text-3xl text-semibold font-psemibold'> Account</Text>
-
+        <View className='w-full flex justify-center h-full px-4 my-6'>
+          <Text className='text-3xl text-semibold font-psemibold'>Account</Text>
           <CustomButton
             title="Log Out"
             handlePress={submit}

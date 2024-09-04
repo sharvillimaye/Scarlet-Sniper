@@ -104,7 +104,7 @@ func (h *Handler) handleSubscribe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err = utils.WriteJSON(w, http.StatusCreated, map[string]types.Course{"course": *course}); err != nil {
+	if err = utils.WriteJSON(w, http.StatusCreated, course); err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
 	}

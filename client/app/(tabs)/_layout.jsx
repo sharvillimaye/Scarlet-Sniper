@@ -31,7 +31,7 @@ const TabsLayout = () => {
           tabBarShowLabel: false,
           tabBarStyle: {
             borderTopWidth: 1,
-            height: 70,
+            height: 100,
           },
         }}
       >

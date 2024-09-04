@@ -1,13 +1,17 @@
+import { useState, useEffect, useRef } from 'react';
 import { StatusBar } from "expo-status-bar";
 import { Redirect, router } from "expo-router";
-import { View, Text, Image, ScrollView } from "react-native";
+import { View, Text, Button, ScrollView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import CustomButton from "../components/CustomButton";
 import { useGlobalContext } from "../context/GlobalContext";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
 
-export default function Index() {
+export default function Index() {  
   const { isLoading, isLogged } = useGlobalContext();
+  const { expoPushToken, notification } = usePushNotifications()
+  const data = JSON.stringify(notification, undefined, 2)
   
   if (!isLoading && isLogged) return <Redirect href="/home" />;
 
@@ -18,13 +22,11 @@ export default function Index() {
           <Text className="text-5xl text-primary font-pbold text-center">
             Scarlet Sniper
           </Text>
-
           <CustomButton 
             title="Continue with Email"
             handlePress={() => router.push('/signin')}
-            containerStyles="w-full mt-7"
+            containerStyles="w-full mt-7" textStyles={undefined} isLoading={undefined}
           />
-          
         </View>
       </ScrollView>
 

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { Alert } from "react-native"
+import { Alert } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
@@ -12,6 +12,7 @@ const GlobalProvider = ({ children }) => {
   const [userInfo, setUserInfo] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isLogged, setIsLogged] = useState(false);
+  const [courses, setCourses] = useState([]);
 
   const register = async (username, email, password) => {
     setIsLoading(true);
@@ -21,8 +22,8 @@ const GlobalProvider = ({ children }) => {
       if (e.response?.status === 400) {
         Alert.alert("Error", 'Please enter a valid username and email!');
       } else {
-        console.log(`Register error: ${e}`);
-        throw new Error('Internal Server Error.');
+        console.error(`Register error: ${e}`);
+        Alert.alert("Error", 'Internal Server Error.');
       }
     } finally {
       setIsLoading(false);
@@ -42,7 +43,7 @@ const GlobalProvider = ({ children }) => {
       if (e.response?.status === 400) {
         Alert.alert("Error", 'Email or Password was incorrect.');
       } else {
-        console.log(`Login error: ${e}`);
+        console.error(`Login error: ${e}`);
         Alert.alert("Error", 'Internal Server Error.');
       }
     } finally {
@@ -54,6 +55,7 @@ const GlobalProvider = ({ children }) => {
     await AsyncStorage.removeItem('userInfo');
     setUserInfo(null);
     setIsLogged(false);
+    setCourses([]);
   };
 
   const isLoggedIn = async () => {
@@ -63,9 +65,10 @@ const GlobalProvider = ({ children }) => {
       if (userInfo) {
         setUserInfo(userInfo);
         setIsLogged(true);
+        getCourses();
       }
     } catch (e) {
-      console.log(`Is logged in error: ${e}`);
+      console.error(`Is logged in error: ${e}`);
     }
   };
 
@@ -74,63 +77,50 @@ const GlobalProvider = ({ children }) => {
   }, []);
 
   const addCourse = async (courseNumber) => {
-    courseNumber = parseInt(courseNumber, 10);
-    try {
-      const response = await fetch(`${BASE_URL}/subscriptions`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `${userInfo.token}`,
-        },
-        body: JSON.stringify({ courseNumber }),
-      });
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+    if (courses && courses.length === 5) {
+      Alert.alert("Error", "You can only snipe up to 5 courses.");
+      return;
+    }
+    
+    if (courseNumber !== null) {
+      try {
+        const response = await axios.post(`${BASE_URL}/subscriptions`, 
+          { courseNumber: parseInt(courseNumber, 10) },
+          { headers: { Authorization: userInfo.token } }
+        );
+        setCourses(prevCourses => [...prevCourses, response.data]);
+        return true
+      } catch (e) {
+        console.error(`Error in adding course: ${e}`);
+        Alert.alert("Error", "Failed to add course. Please try again.");
       }
-    } catch (e) {
-      console.log(`Error in adding courses: ${e}`);
     }
   };
   
   const deleteCourse = async (courseNumber) => {
-    const myHeaders = new Headers();
-    myHeaders.append("Authorization", userInfo.token);
-    myHeaders.append("Content-Type", "application/json");
-
-    const raw = JSON.stringify({
-      "courseNumber": courseNumber
-    });
-
-    console.log(courseNumber)
-
-    const requestOptions = {
-      method: "DELETE",
-      headers: myHeaders,
-      body: raw,
-      redirect: "follow"
-    };
-
-    fetch("http://localhost:8080/api/v1/subscriptions", requestOptions)
-      .then((response) => response.json)
-      .then((result) => console.log(result))
-      .catch((error) => console.error(error));
+    try {
+      await axios.delete(`${BASE_URL}/subscriptions`, {
+        headers: { Authorization: userInfo.token },
+        data: { courseNumber }
+      });
+      setCourses(prevCourses => prevCourses.filter(course => course.courseNumber !== courseNumber));
+    } catch (e) {
+      console.error(`Error in deleting course: ${e}`);
+      Alert.alert("Error", "Failed to delete course. Please try again.");
+    }
   };
   
   const getCourses = async () => {
     try {
-      const response = await fetch(`${BASE_URL}/subscriptions`, {
-        method: 'GET',
-        headers: {
-          Authorization: `${userInfo.token}`,
-        },
-      });
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      if (userInfo) {
+        const response = await axios.get(`${BASE_URL}/subscriptions`, {
+          headers: { Authorization: userInfo.token }
+        });
+        setCourses(response.data);
       }
-      const data = await response.json();
-      return data;
     } catch (e) {
-      console.log(`Error in getting courses: ${e}`);
+      console.error(`Error in getting courses: ${e}`);
+      Alert.alert("Error", "Failed to fetch courses. Please try again.");
     }
   };
 
@@ -140,6 +130,7 @@ const GlobalProvider = ({ children }) => {
         userInfo,
         isLoading,
         isLogged,
+        courses,
         addCourse,
         deleteCourse,
         getCourses,

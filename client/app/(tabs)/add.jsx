@@ -15,6 +15,7 @@ const Add = () => {
     courseNumber: '',
   })
 
+
   const submit = async () => {
     if (form.courseNumber === "") {
       Alert.alert("Error", "Please add course number");
@@ -23,7 +24,10 @@ const Add = () => {
     setSubmitting(true);
 
     try {
-      addCourse(form.courseNumber)
+      const result = await addCourse(form.courseNumber)
+      if (result) {
+        Alert.alert("Course successfully added!")
+      }
     } catch(error) {
       Alert.alert("Error", error.message);
     } finally {
@@ -37,14 +41,13 @@ const Add = () => {
         <View 
           className='w-full flex justify-center h-full px-4 my-6'
         >
-          <Text className='text-3xl text-semibold font-psemibold'> Add Courses</Text>
+          <Text className='text-3xl text-semibold font-psemibold'>Add Sections</Text>
           <FormField
             title="Course Number"
             value={form.courseNumber}
             handleChangeText={(e) => setForm({ ...form, courseNumber: e })}
             otherStyles="mt-7"
           />
-
           <CustomButton
             title="Snipe"
             handlePress={submit}

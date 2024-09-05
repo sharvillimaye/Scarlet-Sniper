@@ -67,5 +67,5 @@ type UnsubscriptionRequestPayload struct {
 }
 
 type NotificationService interface {
-	SendNotifications(subscriptions []Subscription) error
+	SendNotifications(subscriptions []Subscription)
 }

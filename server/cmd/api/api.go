@@ -43,7 +43,7 @@ func (s *APIServer) Run() error {
 	subscriptionHandler := subscription.NewHandler(subscriptionStore, courseStore, userStore)
 	subscriptionHandler.RegisterRoutes(subrouter)
 
-	notificationService := notification.NewService(userStore, courseStore)
+	notificationService := notification.NewService(subscriptionStore)
 
 	monitorService := monitor.NewService(notificationService, subscriptionStore, courseStore)
 	go monitorService.MonitorOpenCourses()

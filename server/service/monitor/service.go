@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+	"sync"
 )
 
 type Service struct {
@@ -75,32 +76,31 @@ func (s *Service) check(url string) {
 
 	courses, err := s.courseStore.GetAllCourses()
 	if err != nil {
-		log.Print("Error getting all courses: %v", err)
+		log.Print("Error getting all courses:", err)
 	}
+
+	var wg sync.WaitGroup
 
 	for _, course := range courses {
 		if course.Status == "CLOSED" {
 			if _, exists := openCourseNumbers[course.CourseNumber]; exists {
 				// The number is in the set
-				println("Updating", course.CourseNumber)
+				subscriptions, err := s.subscriptionStore.GetSubscriptionsByCourseID(course.ID)
+				if err != nil {
+					log.Print("Error getting subscriptions to course:", err)
+				}
+				
+				wg.Add(1)
+                go func(subscriptions []types.Subscription) {
+                    defer wg.Done()
+                    s.notificationService.SendNotifications(subscriptions)
+                } (subscriptions)
 
 				course.Status = "OPEN"
 				err = s.courseStore.UpdateCourse(&course)
 				if err != nil {
 					log.Print("Error updating course:", err)
 				}
-
-				subscriptions, err := s.subscriptionStore.GetSubscriptionsByCourseID(course.ID)
-				if err != nil {
-					log.Print("Error getting subscriptions to course:", err)
-				}
-
-				err = s.notificationService.SendNotifications(subscriptions)
-				if err != nil {
-					log.Print("Error getting notifications to course:", err)
-				}
-
-				s.notificationService.SendNotifications(subscriptions)
 			} else {
 				continue
 			}
@@ -120,4 +120,6 @@ func (s *Service) check(url string) {
 			}
 		}
 	}
+
+	wg.Wait()
 }

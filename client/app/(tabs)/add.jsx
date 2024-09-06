@@ -15,6 +15,11 @@ const Add = () => {
     courseNumber: '',
   })
 
+  const handleCourseNumberChange = (value) => {
+    // Filter out non-numeric characters
+    const numericValue = value.replace(/[^0-9]/g, '');
+    setForm({ ...form, courseNumber: numericValue });
+  };
 
   const submit = async () => {
     if (form.courseNumber === "") {
@@ -38,15 +43,14 @@ const Add = () => {
   return (
     <SafeAreaView className='h-full'>
       <ScrollView>
-        <View 
-          className='w-full flex justify-center h-full px-4 my-6'
-        >
+        <View className='w-full flex justify-center h-full px-4 my-6'>
           <Text className='text-3xl text-semibold font-psemibold'>Add Sections</Text>
           <FormField
             title="Course Number"
             value={form.courseNumber}
-            handleChangeText={(e) => setForm({ ...form, courseNumber: e })}
+            handleChangeText={handleCourseNumberChange}
             otherStyles="mt-7"
+            keyboardType="numeric"
           />
           <CustomButton
             title="Snipe"

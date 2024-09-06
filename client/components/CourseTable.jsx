@@ -91,13 +91,13 @@ const CourseTable = () => {
                     {course.courseNumber}
                   </TableCell>
                   <TableCell width="w-1/4" align="center" className="justify-center">
-                    <StyledTouchableOpacity 
-                      onPress={() => handleDelete(course.courseNumber)}
-                      className="bg-red-500 py-1 px-2 rounded-full"
-                    >
-                      <StyledText className="text-white font-pmedium text-center">Unsnipe</StyledText>
-                    </StyledTouchableOpacity>
-                  </TableCell>
+                   <StyledTouchableOpacity 
+                    onPress={() => handleDelete(course.courseNumber)}
+                    className="bg-red-500 py-1 px-1 rounded-full w-16"
+                  >
+                  <StyledText className="text-white font-pmedium text-center text-sm">Unsnipe</StyledText>
+                </StyledTouchableOpacity>
+                </TableCell>
                 </StyledView>
               ))}
             </>

@@ -15,8 +15,6 @@ export default function Index() {
   
   if (!isLoading && isLogged) return <Redirect href="/home" />;
 
-  console.log(expoPushToken?.data ?? "")
-
   return (
     <SafeAreaView className="white">
       <ScrollView contentContainerStyle={{height: '100%',}}>

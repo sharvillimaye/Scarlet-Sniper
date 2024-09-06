@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 
-const BASE_URL = 'https://scarletsniper.54.211.10.163.nip.io/api/v1';
+const BASE_URL= 'https://scarletsniper.54.211.10.163.nip.io/api/v1'
 
 const GlobalContext = createContext();
 export const useGlobalContext = () => useContext(GlobalContext);
@@ -97,7 +97,7 @@ const GlobalProvider = ({ children }) => {
            },
           { headers: { Authorization: userInfo.token } }
         );
-        if (response.data !== null) {
+        if (response && response.data !== null) {
           setCourses(prevCourses => [...prevCourses, response.data]);
           return true
         } return false

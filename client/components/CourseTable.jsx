@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Linking, Alert, ScrollView, SafeAreaView, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, Linking, Alert, ScrollView, SafeAreaView, ActivityIndicator, useWindowDimensions } from 'react-native';
 import { Link } from 'expo-router';
 import { useGlobalContext } from '@/context/GlobalContext';
 import { styled } from 'nativewind';
@@ -16,7 +16,7 @@ const TableHeader = ({ title, width, align = 'left' }) => (
 );
 
 const TableCell = ({ children, width, align = 'left' }) => (
-  <StyledView className={`${width} px-2 text-center`}>
+  <StyledView className={`${width} px-2 flex justify-center items-${align}`}>
     <StyledText className={`text-sm ${align === 'center' ? 'text-center' : ''}`}>{children}</StyledText>
   </StyledView>
 );
@@ -25,6 +25,9 @@ const CourseTable = () => {
   const { deleteCourse, getCourses, courses } = useGlobalContext();
   const [showAllCourses, setShowAllCourses] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const { width } = useWindowDimensions();
+
+  const isLargeDevice = width >= 768; // iPad mini width is 768px
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -71,9 +74,9 @@ const CourseTable = () => {
                 {showAllCourses ? "All Courses" : "Open Courses"}
               </StyledText>
               <StyledView className="flex-row bg-primary rounded-t-lg py-3">
-                <TableHeader title="Title" width="w-1/2" align="left" />
-                <TableHeader title="Index" width="w-1/4" align="center" />
-                <TableHeader title="Action" width="w-1/4" align="center" />
+                <TableHeader title="Title" width={isLargeDevice ? "w-3/5" : "w-1/2"} align="left" />
+                <TableHeader title="Index" width={isLargeDevice ? "w-1/5" : "w-1/4"} align="center" />
+                <TableHeader title="Action" width={isLargeDevice ? "w-1/5" : "w-1/4"} align="center" />
               </StyledView>
               {filteredCourses.map((course, index) => (
                 <StyledView 
@@ -82,22 +85,22 @@ const CourseTable = () => {
                     index === courses.length - 1 ? 'rounded-b-lg' : ''
                   } ${index % 2 === 0 ? 'bg-white' : 'bg-red-50'}`}
                 >
-                  <TableCell width="w-1/2">
+                  <TableCell width={isLargeDevice ? "w-3/5" : "w-1/2"} align="left">
                     <StyledTouchableOpacity onPress={() => Linking.openURL(`https://sims.rutgers.edu/webreg/editSchedule.htm?login=cas&semesterSelection=92024&indexList=${course.courseNumber}`)}>
                       <StyledText className="text-blue-500 font-pmedium">{course.title}</StyledText>
                     </StyledTouchableOpacity>
                   </TableCell>
-                  <TableCell width="w-1/4" align="center">
+                  <TableCell width={isLargeDevice ? "w-1/5" : "w-1/4"} align="center">
                     {course.courseNumber}
                   </TableCell>
-                  <TableCell width="w-1/4" align="center" className="justify-center">
-                   <StyledTouchableOpacity 
-                    onPress={() => handleDelete(course.courseNumber)}
-                    className="bg-red-500 py-1 px-1 rounded-full w-16"
-                  >
-                  <StyledText className="text-white font-pmedium text-center text-sm">Unsnipe</StyledText>
-                </StyledTouchableOpacity>
-                </TableCell>
+                  <TableCell width={isLargeDevice ? "w-1/5" : "w-1/4"} align="center">
+                    <StyledTouchableOpacity 
+                      onPress={() => handleDelete(course.courseNumber)}
+                      className={`bg-red-500 py-1 px-1 rounded-full ${isLargeDevice ? 'w-24' : 'w-16'}`}
+                    >
+                      <StyledText className="text-white font-pmedium text-center text-sm">Unsnipe</StyledText>
+                    </StyledTouchableOpacity>
+                  </TableCell>
                 </StyledView>
               ))}
             </>

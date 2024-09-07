@@ -34,10 +34,10 @@ install! 'cocoapods',
 
 prepare_react_native_project!
 
-target 'client' do
+target 'ScarletSniper' do
   pod 'FirebaseCoreInternal', :modular_headers => true
   pod 'GoogleUtilities', :modular_headers => true
-  
+
   use_expo_modules!
   config = use_native_modules!
 

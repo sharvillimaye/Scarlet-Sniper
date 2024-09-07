@@ -83,28 +83,34 @@ const GlobalProvider = ({ children }) => {
   }, []);
 
   const addCourse = async (courseNumber) => {
-    if (courses && courses.length === 10) {
-      Alert.alert("Error", "You can only snipe up to 10 courses.");
+    if (!courseNumber || isNaN(parseInt(courseNumber, 10))) {
+      console.error('Invalid course number');
+      Alert.alert("Error", "Invalid course number. Please try again.");
       return false;
     }
-    
-    if (courseNumber !== null) {
-      try {
-        const response = await axios.post(`${BASE_URL}/subscriptions`, 
-          { 
-            courseNumber: parseInt(courseNumber, 10),
-            notificationToken: expoPushToken?.data ?? ""
-           },
-          { headers: { Authorization: userInfo.token } }
-        );
-        if (response && response.data !== null) {
-          setCourses(prevCourses => [...prevCourses, response.data]);
-          return true
-        } return false
-      } catch (e) {
-        console.error(`Error in adding course: ${e}`);
-        Alert.alert("Error", "Failed to add course. Please try again.");
+
+    try {
+      const response = await axios.post(
+        `${BASE_URL}/subscriptions`,
+        {
+          courseNumber: parseInt(courseNumber, 10),
+          notificationToken: expoPushToken?.data || ""
+        },
+        { headers: { Authorization: userInfo.token } }
+      );
+  
+      if (response.data) {
+        setCourses(prevCourses => [...prevCourses, response.data]);
+        return true;
+      } else {
+        console.error('No data received from server');
+        Alert.alert("Error", "No data received from server. Please try again.");
+        return false;
       }
+    } catch (error) {
+      console.error(`Error in adding course: ${error.message}`);
+      Alert.alert("Error", "Failed to add course. Please try again.");
+      return false;
     }
   };
   

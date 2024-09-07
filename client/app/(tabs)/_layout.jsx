@@ -1,21 +1,25 @@
-import { Image, View, Text } from 'react-native'
+import { Image, View, Text, useWindowDimensions } from 'react-native'
 import { Tabs, Redirect } from 'expo-router'
 import React from 'react'
 
 import { icons } from "../../constants";
 
-const TabIcon = ({ icon, color, name, focused }) => {
+const TabIcon = ({ icon, color, name, focused, isLargeDevice }) => {
   return (
-    <View className="flex items-center justify-center gap-2">
+    <View className={`flex items-center justify-center ${isLargeDevice ? 'w-28' : 'w-16'}`}>
       <Image
         source={icon}
         resizeMode="contain"
         tintColor={color}
-        className="w-6 h-6"
+        style={{
+          width: isLargeDevice ? 32 : 24,
+          height: isLargeDevice ? 32 : 24
+        }}
       />
       <Text
-        className={`${focused ? "font-psemibold" : "font-pregular"} text-xs`}
+        className={`${focused ? "font-psemibold" : "font-pregular"} ${isLargeDevice ? 'text-sm mt-2' : 'text-xs mt-1'}`}
         style={{ color: color }}
+        numberOfLines={1}
       >
         {name}
       </Text>
@@ -24,19 +28,26 @@ const TabIcon = ({ icon, color, name, focused }) => {
 };
 
 const TabsLayout = () => {
+  const { width, height } = useWindowDimensions();
+  const isLargeDevice = width >= 768; // iPad mini width is 768px
+
   return (
     <Tabs
-  screenOptions={{
-    tabBarActiveTintColor: "#EF4852",
-    tabBarShowLabel: false,
-    tabBarStyle: {
-      borderTopWidth: 1,
-      height: '10%', // Use percentage instead of fixed height
-      maxHeight: 100, // Set a maximum height
-      minHeight: 60, // Set a minimum height
-    },
-  }}
->
+      screenOptions={{
+        tabBarActiveTintColor: "#EF4852",
+        tabBarShowLabel: false,
+        tabBarStyle: {
+          borderTopWidth: 1,
+          height: isLargeDevice ? '12%' : '10%',
+          maxHeight: isLargeDevice ? 160 : 100,
+          minHeight: 60,
+          paddingBottom: isLargeDevice ? 30 : 10,
+          paddingHorizontal: isLargeDevice ? 20 : 10,
+          justifyContent: 'center',
+          alignItems: 'center',
+        },
+      }}
+    >
       <Tabs.Screen 
         name="home"
         options={{
@@ -48,6 +59,7 @@ const TabsLayout = () => {
               color={color}
               name="Home"
               focused={focused}
+              isLargeDevice={isLargeDevice}
             />
           )
         }}
@@ -64,6 +76,7 @@ const TabsLayout = () => {
               color={color}
               name="Add"
               focused={focused}
+              isLargeDevice={isLargeDevice}
             />
           )
         }}
@@ -80,11 +93,11 @@ const TabsLayout = () => {
               color={color}
               name="Account"
               focused={focused}
+              isLargeDevice={isLargeDevice}
             />
           )
         }}
       />
-        
     </Tabs>
   )
 }

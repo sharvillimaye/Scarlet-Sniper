@@ -39,7 +39,7 @@ const CourseTable = () => {
   }, []);
 
   const handleDelete = (courseNumber) => {
-    Alert.alert('Delete Course', 'Are you sure you want to unsnipe this course?', [
+    Alert.alert('Unsnipe Course', 'Are you sure you want to unsnipe this course?', [
       { text: 'Cancel', style: 'cancel' },
       {
         text: 'Unsnipe',

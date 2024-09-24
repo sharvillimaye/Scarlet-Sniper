@@ -9,10 +9,10 @@ import FormField from '@/components/FormField';
 import CustomButton from '@/components/CustomButton';
 
 const Account = () => {
-  const { logout } = useGlobalContext() 
+  const { logout, deleteAccount } = useGlobalContext() 
   const [isSubmitting, setSubmitting] = useState(false);
 
-  const submit = async () => { 
+  const submitLogOut = async () => { 
     setSubmitting(true);
     try {
       await logout()
@@ -24,6 +24,33 @@ const Account = () => {
     }
   }
 
+  const submitDeleteAccount = async () => {
+    Alert.alert(
+      "Delete Account",
+      "Are you sure you want to delete your account? This action cannot be undone.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete Account",
+          onPress: async () => {
+            setSubmitting(true);
+            try {
+              const result = await deleteAccount()
+              if (result && result === true) {
+                router.replace("/");
+              }
+            } catch(error) {
+              Alert.alert("Error", error.message);
+            } finally {
+              setSubmitting(false);
+            }
+          },
+          style: "destructive"
+        }
+      ]
+    );
+  }
+
   return (
     <SafeAreaView className='h-full'>
       <ScrollView>
@@ -31,7 +58,13 @@ const Account = () => {
           <Text className='text-3xl text-semibold font-psemibold'>Account</Text>
           <CustomButton
             title="Log Out"
-            handlePress={submit}
+            handlePress={submitLogOut}
+            containerStyles="mt-7"
+            isLoading={isSubmitting}
+          />
+          <CustomButton
+            title="Delete Account"
+            handlePress={submitDeleteAccount}
             containerStyles="mt-7"
             isLoading={isSubmitting}
           />

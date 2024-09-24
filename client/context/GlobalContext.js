@@ -64,6 +64,35 @@ const GlobalProvider = ({ children }) => {
     setCourses([]);
   };
 
+  const deleteAccount = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.delete(
+        `${BASE_URL}/user`,
+        { headers: { Authorization: userInfo.token } }
+      );
+
+      if (response.data) {
+        setCourses(prevCourses => [...prevCourses, response.data]);
+        await AsyncStorage.removeItem('userInfo');
+        setUserInfo(null);
+        setIsLogged(false);
+        setCourses([]);
+        return true
+      } else {
+        console.error('Error deleting account');
+        Alert.alert("Error", "An error occured. Please try again later.");
+        return false
+      }
+    } catch (e) {
+      console.error('Error deleting account');
+      Alert.alert("Error", "An error occured. Please try again later.");
+      return false
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const isLoggedIn = async () => {
     try {
       const storedUserInfo = await AsyncStorage.getItem('userInfo');
@@ -154,6 +183,7 @@ const GlobalProvider = ({ children }) => {
         register,
         login,
         logout,
+        deleteAccount,
       }}
     >
       {children}

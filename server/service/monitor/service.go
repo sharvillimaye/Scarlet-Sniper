@@ -2,7 +2,6 @@ package monitor
 
 import (
 	"encoding/json"
-	// "fmt"
 	"io"
 	"log"
 	"net/http"
@@ -28,12 +27,8 @@ func NewService(notificationService types.NotificationService, subscriptionStore
 func (s *Service) MonitorOpenCourses() {
 	ticker := time.NewTicker(1000 * time.Millisecond)
 	go func() {
-		for {
-			select {
-			case <-ticker.C:
-				// fmt.Printf("Checking at %s\n", time.Now().Format(time.RFC3339))
-				s.check(apiURL)
-			}
+		for range ticker.C {
+			s.check(apiURL)
 		}
 	}()
 	select {}

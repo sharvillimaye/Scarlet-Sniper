@@ -24,6 +24,7 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/login", h.handleLogin).Methods("POST")
 	router.HandleFunc("/register", h.handleRegister).Methods("POST")
 	router.HandleFunc("/user", auth.WithJWTAuth(h.handleUser, h.store)).Methods("GET")
+	router.HandleFunc("/user", auth.WithJWTAuth(h.deleteUser, h.store)).Methods("DELETE")
 }
 
 func (h *Handler) handleUser(w http.ResponseWriter, r *http.Request) {
@@ -35,6 +36,20 @@ func (h *Handler) handleUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err = utils.WriteJSON(w, http.StatusOK, map[string]string{"username": user.Username, "email": user.Email}); err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
+}
+
+func (h *Handler) deleteUser(w http.ResponseWriter, r *http.Request) {
+	userID := auth.GetUserIDFromContext(r.Context())
+
+	err := h.store.DeleteUserByID(userID)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("failed to get user by id: %v", err))
+	}
+
+	if err = utils.WriteJSON(w, http.StatusOK, nil); err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
 	}

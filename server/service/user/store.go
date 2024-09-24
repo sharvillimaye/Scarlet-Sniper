@@ -60,6 +60,14 @@ func (s *Store) GetUserByEmail(email string) (*types.User, error) {
 	return u, nil
 }
 
+func (s *Store) DeleteUserByID(id int) error {
+	_, err := s.db.Exec("DELETE FROM users WHERE id = ?", id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (s *Store) GetUserByID(id int) (*types.User, error) {
 	rows, err := s.db.Query("SELECT * FROM users WHERE id = ?", id)
 	if err != nil {

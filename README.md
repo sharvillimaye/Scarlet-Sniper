@@ -59,7 +59,7 @@ Scarlet Sniper is built using the following technologies:
 To get started with Scarlet Sniper, clone the repository and follow the instructions for setting up the client and server.
 
 ```sh
-git clone https://github.com/yourusername/scarlet-sniper.git
+git clone https://github.com/sharvillimaye/scarlet-sniper.git
 cd scarlet-sniper
 ```
 

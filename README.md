@@ -49,7 +49,7 @@ Scarlet Sniper is built using the following technologies:
 - **Deployment**:
     - [Docker](https://www.docker.com/) for containerization
     - [Kubernetes](https://kubernetes.io/) for orchestration
-    - [Google Cloud Platform (GCP)](https://cloud.google.com/) for hosting
+    - [Amazon Web Services (AWS)](https://aws.amazon.com/) for hosting
 
 - **CI/CD**:
     - [GitHub Actions](https://github.com/features/actions) for continuous integration and deployment
